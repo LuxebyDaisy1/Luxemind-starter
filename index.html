@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LuxeMind Starter</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 32px; max-width: 720px; }
+    textarea { width: 100%; min-height: 120px; padding: 12px; }
+    button { padding: 10px 16px; margin-top: 8px; cursor: pointer; }
+    .bubble { background: #f6f5ff; border: 1px solid #e6e1ff; padding: 12px; border-radius: 8px; margin: 12px 0; white-space: pre-wrap; }
+    .sys { color: #6b46c1; font-weight: 600; }
+    .foot { margin-top: 24px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>💎 LuxeMind AI Coach — Starter</h1>
+  <p>Type a message and talk to your LuxeMind coach. This demo calls a serverless function <code>/api/chat</code> on Vercel, which relays to OpenAI. Your API key stays on the server.</p>
+
+  <div class="bubble sys">Default system prompt: calm, bilingual coach. You can customize in <code>api/chat.js</code>.</div>
+
+  <textarea id="input" placeholder="e.g., Give me a 1-minute morning reset (English + Español)"></textarea>
+  <button id="send">Send</button>
+
+  <div id="out" class="bubble"></div>
+
+  <script>
+    async function send() {
+      const userText = document.getElementById('input').value.trim() || "Give me a 1-minute morning reset (English + Español)";
+      const out = document.getElementById('out');
+      out.textContent = "Thinking…";
+
+      const resp = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [
+            { role: "system", content: "You are LuxeMind, a calm, bilingual (English/Español) AI coach focusing on mindfulness, psychology, and gentle growth." },
+            { role: "user", content: userText }
+          ]
+        })
+      });
+
+      const data = await resp.json();
+      const text = data?.choices?.[0]?.message?.content || JSON.stringify(data, null, 2);
+      out.textContent = text;
+    }
+    document.getElementById('send').addEventListener('click', send);
+  </script>
+  <div class="foot">© LuxeMind Starter</div>
+</body>
+</html>
